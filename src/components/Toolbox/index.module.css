@@ -1,0 +1,15 @@
+.toolboxContainer {
+  @apply px-5 py-4 flex flex-col gap-4 absolute top-[5%] rounded-md mx-4;
+  border: 1px solid theme("colors.border1");
+  box-shadow: theme("colors.shadow1");
+}
+.toolItem {
+  @apply flex gap-3 flex-col mx-4 max-w-fit;
+}
+.itemContainer {
+  @apply flex gap-2;
+}
+.activeColor {
+  outline: 1px solid rgb(26, 26, 26); /* Adjust width and color as needed */
+  outline-offset: 1px; /* Adjust offset if needed */
+}
