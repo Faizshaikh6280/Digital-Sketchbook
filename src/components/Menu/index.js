@@ -6,7 +6,7 @@ import { FaRotateRight } from "react-icons/fa6";
 import { BsFileEarmarkArrowDownFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { MENU_ITEMS } from "@/constant";
-import { menuItemClick } from "@/slice/menuSlice";
+import { actionItemClick, menuItemClick } from "@/slice/menuSlice";
 import cx from "classnames";
 
 export const Menu = () => {
@@ -16,6 +16,10 @@ export const Menu = () => {
 
   function hanldeMenuClick(menuItem) {
     dispatch(menuItemClick(menuItem));
+  }
+
+  function handleActionMenuItemClick(actionItem) {
+    dispatch(actionItemClick(actionItem));
   }
 
   return (
@@ -36,13 +40,22 @@ export const Menu = () => {
       >
         <BsEraserFill className={styles.icon} />
       </div>
-      <div className={styles.iconWrapper}>
+      <div
+        className={styles.iconWrapper}
+        onClick={() => handleActionMenuItemClick(MENU_ITEMS.UNDO)}
+      >
         <FaRotateLeft className={styles.icon} />
       </div>
-      <div className={styles.iconWrapper}>
+      <div
+        className={styles.iconWrapper}
+        onClick={() => handleActionMenuItemClick(MENU_ITEMS.REDO)}
+      >
         <FaRotateRight className={styles.icon} />
       </div>
-      <div className={styles.iconWrapper}>
+      <div
+        className={styles.iconWrapper}
+        onClick={() => handleActionMenuItemClick(MENU_ITEMS.DOWNLOAD)}
+      >
         <BsFileEarmarkArrowDownFill className={styles.icon} />
       </div>
     </div>

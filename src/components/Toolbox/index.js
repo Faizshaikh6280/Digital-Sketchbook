@@ -7,7 +7,6 @@ import cx from "classnames";
 function Toolbox() {
   const dispatch = useDispatch();
   const activeMenuItem = useSelector((store) => store.menu.activeMenuItem);
-
   const updateBrushSize = function (e) {
     dispatch(changeBrushSize({ item: activeMenuItem, size: +e.target.value }));
   };
@@ -16,7 +15,7 @@ function Toolbox() {
     dispatch(changeColor({ item: activeMenuItem, color: newColor }));
   };
 
-  const { color } = useSelector((store) => store.toolbox[activeMenuItem]);
+  const { color, size } = useSelector((store) => store.toolbox[activeMenuItem]);
 
   const isShowStroke = activeMenuItem === MENU_ITEMS.PENCIL;
   const isShowBrush = activeMenuItem === MENU_ITEMS.ERASER || MENU_ITEMS.PENCIL;
@@ -61,6 +60,7 @@ function Toolbox() {
               step={1}
               style={{ cursor: "pointer" }}
               onChange={updateBrushSize}
+              defaultValue={size}
             />
           </div>
         </div>

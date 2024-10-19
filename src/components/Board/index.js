@@ -1,25 +1,14 @@
-import React, { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
+import { MENU_ITEMS } from "@/constant";
+import { actionItemClick } from "@/slice/menuSlice";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 function Board() {
-  const activeMenuItem = useSelector((store) => store.menu.activeMenuItem);
-
+  const { activeMenuItem, actionMenuItem } = useSelector((store) => store.menu);
+  const dispatch = useDispatch();
   const canvasRef = useRef(null);
   const shouldDraw = useRef(false);
   const { color, size } = useSelector((store) => store.toolbox[activeMenuItem]);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-
-    const changeConfig = () => {
-      ctx.strokeStyle = color;
-      ctx.lineWidth = size;
-    };
-
-    changeConfig();
-  }, [color, size]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -61,6 +50,31 @@ function Board() {
       canvas.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    const changeConfig = () => {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = size;
+    };
+
+    changeConfig();
+  }, [color, size]);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    const canvas = canvasRef.current;
+    if (actionMenuItem === MENU_ITEMS.DOWNLOAD) {
+      const dataUrl = canvas.toDataURL();
+      const anchor = document.createElement("a");
+      anchor.href = dataUrl;
+      anchor.download = "capture.jpg";
+      anchor.click();
+      dispatch(actionItemClick(null));
+    }
+  }, [actionMenuItem, dispatch]);
 
   return <canvas ref={canvasRef}></canvas>;
 }
