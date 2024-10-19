@@ -14,3 +14,9 @@
   outline: 1px solid rgb(26, 26, 26); /* Adjust width and color as needed */
   outline-offset: 1px; /* Adjust offset if needed */
 }
+
+.colorBox {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
