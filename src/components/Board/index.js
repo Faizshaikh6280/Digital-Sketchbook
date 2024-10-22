@@ -1,5 +1,6 @@
 import { MENU_ITEMS } from "@/constant";
 import { actionItemClick } from "@/slice/menuSlice";
+import { socket } from "@/socket";
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -21,16 +22,34 @@ function Board() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    function beginPath(x, y) {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+
     function handleMousDown(e) {
       shouldDraw.current = true;
-      ctx.beginPath();
-      ctx.moveTo(e.clientX, e.clientY);
+      beginPath(e.clientX, e.clientY);
+      socket.emit("beginPath", { x: e.clientX, y: e.clientY });
     }
+
+    function drawing(x, y) {
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+
+    socket.on("beginPath", (args) => {
+      beginPath(args.x, args.y);
+    });
+
+    socket.on("drawing", (args) => {
+      drawing(args.x, args.y);
+    });
 
     function handleMouseMove(e) {
       if (!shouldDraw.current) return;
-      ctx.lineTo(e.clientX, e.clientY);
-      ctx.stroke();
+      drawing(e.clientX, e.clientY);
+      socket.emit("drawing", { x: e.clientX, y: e.clientY });
     }
 
     function handleMouseUp(e) {
@@ -47,14 +66,14 @@ function Board() {
 
     canvas.addEventListener("mouseup", handleMouseUp);
 
-    // when mounting
-
     return () => {
       canvas.removeEventListener("mousedown", handleMousDown);
 
       canvas.removeEventListener("mousemove", handleMouseMove);
 
       canvas.removeEventListener("mouseup", handleMouseUp);
+      socket.off("beginPath", handleMousDown);
+      socket.off("drawing", handleMouseMove);
     };
   }, []);
 
@@ -62,12 +81,22 @@ function Board() {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    const changeConfig = () => {
+    const changeConfig = (color, size) => {
       ctx.strokeStyle = color;
       ctx.lineWidth = size;
     };
 
-    changeConfig();
+    function handlerChangeConfig(args) {
+      changeConfig(args.color, args.size);
+    }
+
+    socket.on("changeConfig", handlerChangeConfig);
+
+    changeConfig(color, size);
+
+    return () => {
+      socket.off("changeConfig", handlerChangeConfig);
+    };
   }, [color, size]);
 
   useEffect(() => {

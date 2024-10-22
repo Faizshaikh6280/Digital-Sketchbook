@@ -3,19 +3,22 @@ import styles from "./index.module.css";
 import { COLORS, MENU_ITEMS } from "@/constant";
 import { changeBrushSize, changeColor } from "@/slice/toolboxSlice";
 import cx from "classnames";
+import { socket } from "@/socket";
 
 function Toolbox() {
   const dispatch = useDispatch();
   const activeMenuItem = useSelector((store) => store.menu.activeMenuItem);
+  const { color, size } = useSelector((store) => store.toolbox[activeMenuItem]);
+
   const updateBrushSize = function (e) {
     dispatch(changeBrushSize({ item: activeMenuItem, size: +e.target.value }));
+    socket.emit("changeConfig", { color, size: e.target.value });
   };
 
   const updateColor = function (newColor) {
     dispatch(changeColor({ item: activeMenuItem, color: newColor }));
+    socket.emit("changeConfig", { color: newColor, size });
   };
-
-  const { color, size } = useSelector((store) => store.toolbox[activeMenuItem]);
 
   const isShowStroke = activeMenuItem === MENU_ITEMS.PENCIL;
   const isShowBrush = activeMenuItem === MENU_ITEMS.ERASER || MENU_ITEMS.PENCIL;
